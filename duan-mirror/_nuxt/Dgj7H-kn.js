@@ -1,0 +1,1 @@
+import{_ as s,a as r,c as n,q as o}from"./CPdw-ypE.js";const t={};function a(e,c){return r(),n("li",null,[o(e.$slots,"default")])}const _=Object.assign(s(t,[["render",a]]),{__name:"ProseLi"});export{_ as default};

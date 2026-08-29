@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="大道总纲">
+  <rect width="48" height="48" rx="10" fill="#f8f5f0"/>
+  <text
+    x="24"
+    y="25"
+    fill="#2c2c2c"
+    dominant-baseline="middle"
+    font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif"
+    font-size="31"
+    font-weight="800"
+    text-anchor="middle">道</text>
+</svg>
