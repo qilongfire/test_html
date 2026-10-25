@@ -6,70 +6,69 @@
 <title>孤鸽镇 · 老警长的旅程路线图</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; font-family: "Georgia", "Songti SC", "Microsoft YaHei", serif; background: #2a241c; }
+  html, body { height: 100%; font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
   body { display: flex; align-items: center; justify-content: center; overflow: auto; padding: 20px; }
 
   .map-wrap {
     position: relative;
     width: 100%;
-    max-width: 1100px;
-    background: #e8dcc4;
-    border: 3px solid #6b5434;
-    border-radius: 8px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    max-width: 1180px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.12);
     overflow: hidden;
   }
 
   .title-bar {
-    background: linear-gradient(180deg, #3a2e1f, #2a2015);
-    color: #e8c87a;
-    padding: 16px 24px;
+    background: #1a2744;
+    color: #fff;
+    padding: 18px 28px;
     text-align: center;
-    border-bottom: 2px solid #8a6d3b;
   }
-  .title-bar h1 { font-size: 24px; letter-spacing: 3px; margin-bottom: 6px; }
-  .title-bar p { font-size: 13px; color: #c9b896; line-height: 1.5; }
+  .title-bar h1 { font-size: 22px; letter-spacing: 2px; margin-bottom: 4px; font-weight: 600; }
+  .title-bar p { font-size: 13px; color: #aab8d4; line-height: 1.5; }
 
-  .map-area { position: relative; width: 100%; background: #d9c9a8; }
+  .map-area { position: relative; width: 100%; background: #cfe0f0; }
   svg { display: block; width: 100%; height: auto; }
 
   /* 图例 */
   .legend {
     position: absolute;
-    bottom: 16px; left: 16px;
-    background: rgba(255, 252, 245, 0.95);
+    bottom: 14px; left: 14px;
+    background: rgba(255, 255, 255, 0.96);
     padding: 10px 14px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     font-size: 12.5px;
     line-height: 1.9;
-    border: 1px solid #c9b896;
+    border: 1px solid #dde3ec;
     z-index: 10;
   }
-  .legend h3 { font-size: 13px; color: #5a3e1b; margin-bottom: 4px; border-bottom: 1px solid #d4c4a0; padding-bottom: 3px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend h3 { font-size: 13px; color: #1a2744; margin-bottom: 5px; border-bottom: 1px solid #e8ecf1; padding-bottom: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; color: #333; }
   .legend-line { width: 30px; height: 4px; border-radius: 2px; }
-  .legend-line.north { background: #c0392b; }
-  .legend-line.return { background: repeating-linear-gradient(90deg, #2c6fb0 0 5px, transparent 5px 10px); height: 3px; }
+  .legend-line.north { background: #e74c3c; }
+  .legend-line.return { background: repeating-linear-gradient(90deg, #2980b9 0 5px, transparent 5px 10px); height: 3px; }
+  .legend-line.border { background: #1a2744; height: 5px; }
   .legend-dot {
     width: 16px; height: 16px; border-radius: 50%;
-    background: #5a3e1b; border: 2px solid #e8c87a;
+    background: #1a2744; border: 2px solid #f1c40f;
     display: inline-flex; align-items: center; justify-content: center;
     color: #fff; font-size: 9px; font-weight: bold;
   }
-  .legend-dot.ret { background: #2c6fb0; border-color: #a8c8e8; }
+  .legend-dot.ret { background: #2980b9; border-color: #85c1e9; }
 
   /* 站点弹窗 */
   .tooltip {
     position: absolute;
-    background: #fffcf5;
-    border: 1px solid #8a6d3b;
+    background: #ffffff;
+    border: 1px solid #d0d7e2;
     border-radius: 6px;
     padding: 12px 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
     font-size: 13px;
     line-height: 1.55;
-    max-width: 280px;
+    max-width: 290px;
     z-index: 20;
     pointer-events: none;
     opacity: 0;
@@ -77,65 +76,66 @@
   }
   .tooltip.show { opacity: 1; }
   .tooltip .tt-num {
-    display: inline-block; background: #5a3e1b; color: #e8c87a;
+    display: inline-block; background: #1a2744; color: #f1c40f;
     width: 20px; height: 20px; border-radius: 50%; text-align: center;
     line-height: 20px; font-size: 11px; font-weight: bold; margin-right: 6px;
   }
-  .tooltip.ret .tt-num { background: #2c6fb0; }
-  .tooltip .tt-name { font-weight: bold; color: #5a3e1b; font-size: 15px; margin-bottom: 3px; }
-  .tooltip .tt-state { font-size: 11.5px; color: #8a6d3b; margin-bottom: 7px; }
-  .tooltip .tt-desc { color: #3a3228; font-size: 12.5px; }
+  .tooltip.ret .tt-num { background: #2980b9; }
+  .tooltip .tt-name { font-weight: 600; color: #1a2744; font-size: 15px; margin-bottom: 3px; }
+  .tooltip .tt-state { font-size: 11.5px; color: #6b7280; margin-bottom: 7px; }
+  .tooltip .tt-desc { color: #374151; font-size: 12.5px; }
 
-  /* 侧边站点列表 */
+  /* 底部站点列表 */
   .stops-panel {
-    background: #f5ecd8;
-    border-top: 2px solid #8a6d3b;
-    padding: 14px 20px;
+    background: #f8f9fb;
+    border-top: 1px solid #e8ecf1;
+    padding: 16px 24px;
     columns: 2;
-    column-gap: 30px;
+    column-gap: 36px;
   }
   .stops-panel h3 {
     column-span: all;
     text-align: center;
-    color: #5a3e1b;
+    color: #1a2744;
     font-size: 15px;
     margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #d4c4a0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8ecf1;
+    font-weight: 600;
   }
   .stop-row {
     break-inside: avoid;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: flex-start;
-    padding: 5px 2px;
+    padding: 6px 4px;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: background 0.15s;
   }
-  .stop-row:hover { background: #ecd9b0; }
+  .stop-row:hover { background: #eef2f7; }
   .stop-row .snum {
     flex-shrink: 0;
-    width: 20px; height: 20px;
-    background: #5a3e1b; color: #e8c87a;
+    width: 22px; height: 22px;
+    background: #1a2744; color: #f1c40f;
     border-radius: 50%; text-align: center;
-    line-height: 20px; font-size: 11px; font-weight: bold;
+    line-height: 22px; font-size: 11px; font-weight: 700;
   }
-  .stop-row.ret .snum { background: #2c6fb0; }
-  .stop-row .sname { font-weight: bold; color: #5a3e1b; font-size: 12.5px; }
-  .stop-row .sstate { font-size: 11px; color: #8a6d3b; }
+  .stop-row.ret .snum { background: #2980b9; }
+  .stop-row .sname { font-weight: 600; color: #1a2744; font-size: 12.5px; }
+  .stop-row .sstate { font-size: 11px; color: #6b7280; margin-top: 1px; }
   .divider {
     column-span: all;
     text-align: center;
-    color: #8a6d3b;
+    color: #6b7280;
     font-size: 12px;
     font-style: italic;
-    margin: 8px 0;
+    margin: 10px 0 4px;
   }
 
   @media (max-width: 700px) {
     .stops-panel { columns: 1; }
-    .title-bar h1 { font-size: 18px; }
+    .title-bar h1 { font-size: 17px; }
     .legend { font-size: 11px; padding: 8px 10px; }
   }
 </style>
@@ -149,13 +149,15 @@
   </div>
 
   <div class="map-area" id="mapArea">
-    <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" id="mapSvg">
-      <!-- 背景海洋 -->
-      <rect width="1000" height="700" fill="#cfe0ec"/>
-      <!-- 陆地底色将由JS绘制的州多边形填充 -->
-      <g id="states"></g>
-      <!-- 州名标签 -->
-      <g id="stateLabels"></g>
+    <svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg" id="mapSvg">
+      <!-- 海洋背景 -->
+      <rect width="1000" height="720" fill="#cfe0f0"/>
+      <!-- 陆地基底（所有州拼合，先填统一浅色） -->
+      <g id="land"></g>
+      <!-- 州界 -->
+      <g id="stateLines"></g>
+      <!-- 国境线（美墨、美加） -->
+      <g id="borders"></g>
       <!-- 路线 -->
       <g id="routes"></g>
       <!-- 站点标记 -->
@@ -163,6 +165,7 @@
     </svg>
     <div class="legend">
       <h3>图例</h3>
+      <div class="legend-item"><span class="legend-line border"></span><span>国境线</span></div>
       <div class="legend-item"><span class="legend-line north"></span><span>北上赶牛路线</span></div>
       <div class="legend-item"><span class="legend-line return"></span><span>考尔携格斯遗体返乡</span></div>
       <div class="legend-item"><span class="legend-dot">1</span><span>途经站点</span></div>
@@ -180,114 +183,101 @@
 </div>
 
 <script>
-  // ===== 投影参数（等距圆柱投影）=====
-  const minLng = -112, maxLng = -92;
-  const minLat = 24, maxLat = 51;
-  const W = 1000, H = 700;
+  // ===== 投影参数（等距圆柱投影，WGS84）=====
+  const minLng = -113, maxLng = -91;
+  const minLat = 23, maxLat = 52;
+  const W = 1000, H = 720;
   const xOf = lng => (lng - minLng) / (maxLng - minLng) * W;
   const yOf = lat => (maxLat - lat) / (maxLat - minLat) * H;
   const proj = (lat, lng) => [xOf(lng), yOf(lat)];
 
   // ===== 州多边形（lat/lng 顶点，简化轮廓）=====
   const states = [
-    // 德州：含狭长的锅柄区
-    { name: "TX", label: "德克萨斯\nTexas", color: "#e8d9b5", pts: [
+    { name: "TX", pts: [
       [-106.6,36.5],[-103,36.5],[-103,32],[-99,32],[-97.5,31.5],[-95.5,30.5],
       [-94.5,29.5],[-97,27.8],[-97.2,26],[-99.5,26.2],[-101.5,27.5],[-104,29.3],
       [-106.6,31.5]
     ]},
-    // 俄克拉荷马
-    { name: "OK", label: "俄克拉荷马\nOklahoma", color: "#e0d0a8", pts: [
-      [-103,37],[-94.4,37],[-94.4,33.6],[-103,33.6]
-    ]},
-    // 堪萨斯
-    { name: "KS", label: "堪萨斯\nKansas", color: "#e8d9b5", pts: [
-      [-102,40],[-94.6,40],[-94.6,37],[-102,37]
-    ]},
-    // 内布拉斯加
-    { name: "NE", label: "内布拉斯加\nNebraska", color: "#e0d0a8", pts: [
-      [-104,43],[-95.3,43],[-95.3,40],[-104,40]
-    ]},
-    // 怀俄明
-    { name: "WY", label: "怀俄明\nWyoming", color: "#e8d9b5", pts: [
-      [-111,45],[-104,45],[-104,41],[-111,41]
-    ]},
-    // 蒙大拿
-    { name: "MT", label: "蒙大拿\nMontana", color: "#d8c89e", pts: [
-      [-116,49],[-104,49],[-104,44.5],[-116,44.5]
-    ]},
-    // 新墨西哥
-    { name: "NM", label: "新墨西哥\nNew Mexico", color: "#e0d0a8", pts: [
-      [-109,37],[-103,37],[-103,31.8],[-109,31.8]
-    ]},
-    // 科罗拉多
-    { name: "CO", label: "科罗拉多\nColorado", color: "#e8d9b5", pts: [
-      [-109,41],[-102,41],[-102,37],[-109,37]
-    ]},
-    // 南达科他
-    { name: "SD", label: "南达科他\nS. Dakota", color: "#e0d0a8", pts: [
-      [-104,45.5],[-96.5,45.5],[-96.5,42.5],[-104,42.5]
-    ]},
-    // 北达科他
-    { name: "ND", label: "北达科他\nN. Dakota", color: "#d8c89e", pts: [
-      [-104,49],[-97,49],[-97,45.5],[-104,45.5]
-    ]},
-    // 亚利桑那
-    { name: "AZ", label: "亚利桑那\nArizona", color: "#e0d0a8", pts: [
-      [-114.8,37],[-109,37],[-109,31.3],[-114.8,31.3]
-    ]},
-    // 爱达荷
-    { name: "ID", label: "爱达荷\nIdaho", color: "#d8c89e", pts: [
-      [-117,49],[-111,49],[-111,42],[-114.5,42],[-117,44.5]
-    ]},
-    // 犹他
-    { name: "UT", label: "犹他\nUtah", color: "#e0d0a8", pts: [
-      [-114,41],[-109,41],[-109,37],[-114,37]
-    ]},
-    // 墨西哥（简化，德州以南）
-    { name: "MX", label: "墨西哥\nMexico", color: "#d4c496", pts: [
+    { name: "OK", pts: [[-103,37],[-94.4,37],[-94.4,33.6],[-103,33.6]] },
+    { name: "KS", pts: [[-102,40],[-94.6,40],[-94.6,37],[-102,37]] },
+    { name: "NE", pts: [[-104,43],[-95.3,43],[-95.3,40],[-104,40]] },
+    { name: "WY", pts: [[-111,45],[-104,45],[-104,41],[-111,41]] },
+    { name: "MT", pts: [[-116,49],[-104,49],[-104,44.5],[-116,44.5]] },
+    { name: "NM", pts: [[-109,37],[-103,37],[-103,31.8],[-109,31.8]] },
+    { name: "CO", pts: [[-109,41],[-102,41],[-102,37],[-109,37]] },
+    { name: "SD", pts: [[-104,45.5],[-96.5,45.5],[-96.5,42.5],[-104,42.5]] },
+    { name: "ND", pts: [[-104,49],[-97,49],[-97,45.5],[-104,45.5]] },
+    { name: "AZ", pts: [[-114.8,37],[-109,37],[-109,31.3],[-114.8,31.3]] },
+    { name: "ID", pts: [[-117,49],[-111,49],[-111,42],[-114.5,42],[-117,44.5]] },
+    { name: "UT", pts: [[-114,41],[-109,41],[-109,37],[-114,37]] },
+    { name: "NV", pts: [[-120,42],[-114,42],[-114,35],[-114.8,35],[-114.8,37],[-120,39]] },
+    { name: "OR", pts: [[-124.5,46.2],[-117,46.2],[-117,42],[-120,42],[-120,39],[-124.5,42.5]] },
+    { name: "WA", pts: [[-124.7,49],[-117,49],[-117,46.2],[-124.5,46.2]] },
+    { name: "MX", pts: [
       [-106.6,31.5],[-104,29.3],[-101.5,27.5],[-99.5,26.2],[-97.2,26],[-97,27.8],
       [-94.5,29.5],[-97,24],[-104,23],[-110,24],[-112,28],[-112,31]
     ]},
-    // 加拿大（蒙大拿以北）
-    { name: "CA", label: "加拿大\nCanada", color: "#cfdcc0", pts: [
-      [-117,51],[-97,51],[-97,49],[-116,49],[-117,49]
-    ]}
+    { name: "CA", pts: [[-117,52],[-97,52],[-97,49],[-116,49],[-117,49]] }
   ];
 
-  // 绘制州
-  const statesG = document.getElementById('states');
-  const labelsG = document.getElementById('stateLabels');
+  const SVG = 'http://www.w3.org/2000/svg';
+  const landG = document.getElementById('land');
+  const stateLinesG = document.getElementById('stateLines');
+  const bordersG = document.getElementById('borders');
+
+  // 绘制陆地基底 + 州界
   states.forEach(s => {
     const pts = s.pts.map(([lng, lat]) => proj(lat, lng).join(',')).join(' ');
-    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    poly.setAttribute('points', pts);
-    poly.setAttribute('fill', s.color);
-    poly.setAttribute('stroke', '#8a6d3b');
-    poly.setAttribute('stroke-width', '1');
-    poly.setAttribute('stroke-linejoin', 'round');
-    statesG.appendChild(poly);
-
-    // 州名标签（取多边形几何中心近似）
-    const xs = s.pts.map(p => xOf(p[0]));
-    const ys = s.pts.map(p => yOf(p[1]));
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
-    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-    const lines = s.label.split('\n');
-    lines.forEach((line, i) => {
-      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      t.setAttribute('x', cx);
-      t.setAttribute('y', cy + (i - (lines.length-1)/2) * 14);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-size', '12');
-      t.setAttribute('fill', '#6b5434');
-      t.setAttribute('font-family', 'Georgia, serif');
-      t.setAttribute('font-weight', 'bold');
-      t.setAttribute('opacity', '0.7');
-      t.textContent = line;
-      labelsG.appendChild(t);
-    });
+    // 陆地填充（统一浅色）
+    const fill = document.createElementNS(SVG, 'polygon');
+    fill.setAttribute('points', pts);
+    fill.setAttribute('fill', '#f5f6f8');
+    fill.setAttribute('stroke', 'none');
+    landG.appendChild(fill);
+    // 州界（细线）
+    const line = document.createElementNS(SVG, 'polygon');
+    line.setAttribute('points', pts);
+    line.setAttribute('fill', 'none');
+    line.setAttribute('stroke', '#b8c2cc');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-linejoin', 'round');
+    stateLinesG.appendChild(line);
   });
+
+  // ===== 国境线 =====
+  // 美加边境：沿 49°N（太平洋到大湖区），画深色粗线 + 浅色 halo 增强对比
+  const usCanadaBorder = [
+    [-124.7,49],[-117,49],[-104,49],[-97,49],[-95.2,49],[-95,48.7],[-94.6,48.4],[-94,48.6],[-88.5,48.3]
+  ].map(([lng,lat]) => proj(lat,lng).join(',')).join(' ');
+
+  function addBorder(pointsStr) {
+    // halo（外圈浅色描边）
+    const halo = document.createElementNS(SVG, 'polyline');
+    halo.setAttribute('points', pointsStr);
+    halo.setAttribute('fill', 'none');
+    halo.setAttribute('stroke', '#ffffff');
+    halo.setAttribute('stroke-width', '5');
+    halo.setAttribute('stroke-linecap', 'round');
+    halo.setAttribute('stroke-linejoin', 'round');
+    bordersG.appendChild(halo);
+    // core（深色主线）
+    const core = document.createElementNS(SVG, 'polyline');
+    core.setAttribute('points', pointsStr);
+    core.setAttribute('fill', 'none');
+    core.setAttribute('stroke', '#1a2744');
+    core.setAttribute('stroke-width', '2.5');
+    core.setAttribute('stroke-linecap', 'round');
+    core.setAttribute('stroke-linejoin', 'round');
+    bordersG.appendChild(core);
+  }
+  addBorder(usCanadaBorder);
+
+  // 美墨边境：从墨西哥湾沿格兰德河向西至太平洋
+  const usMexicoBorder = [
+    [-97.2,26],[-99.5,26.2],[-101.5,27.5],[-104,29.3],[-106.6,31.5],[-109,31.3],
+    [-111,31.3],[-114.8,32.5],[-117,32.5]
+  ].map(([lng,lat]) => proj(lat,lng).join(',')).join(' ');
+  addBorder(usMexicoBorder);
 
   // ===== 站点数据 =====
   const stops = [
@@ -322,32 +312,48 @@
   // ===== 绘制路线 =====
   const routesG = document.getElementById('routes');
 
-  // 北上路线
+  // 北上路线（带 halo 增强清晰度）
   const northPts = stops.map(s => proj(s.lat, s.lng));
-  const northPath = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  const northHalo = document.createElementNS(SVG, 'polyline');
+  northHalo.setAttribute('points', northPts.map(p => p.join(',')).join(' '));
+  northHalo.setAttribute('fill', 'none');
+  northHalo.setAttribute('stroke', '#ffffff');
+  northHalo.setAttribute('stroke-width', '6');
+  northHalo.setAttribute('stroke-linecap', 'round');
+  northHalo.setAttribute('stroke-linejoin', 'round');
+  routesG.appendChild(northHalo);
+
+  const northPath = document.createElementNS(SVG, 'polyline');
   northPath.setAttribute('points', northPts.map(p => p.join(',')).join(' '));
   northPath.setAttribute('fill', 'none');
-  northPath.setAttribute('stroke', '#c0392b');
+  northPath.setAttribute('stroke', '#e74c3c');
   northPath.setAttribute('stroke-width', '3.5');
   northPath.setAttribute('stroke-linecap', 'round');
   northPath.setAttribute('stroke-linejoin', 'round');
-  northPath.setAttribute('opacity', '0.85');
   routesG.appendChild(northPath);
 
   // 归乡路线：米尔克河 -> 瓜达卢佩河
   const retPts = [proj(stops[9].lat, stops[9].lng), proj(returnStop.lat, returnStop.lng)];
-  const retPath = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  const retHalo = document.createElementNS(SVG, 'polyline');
+  retHalo.setAttribute('points', retPts.map(p => p.join(',')).join(' '));
+  retHalo.setAttribute('fill', 'none');
+  retHalo.setAttribute('stroke', '#ffffff');
+  retHalo.setAttribute('stroke-width', '5');
+  retHalo.setAttribute('stroke-linecap', 'round');
+  retHalo.setAttribute('stroke-linejoin', 'round');
+  routesG.appendChild(retHalo);
+
+  const retPath = document.createElementNS(SVG, 'polyline');
   retPath.setAttribute('points', retPts.map(p => p.join(',')).join(' '));
   retPath.setAttribute('fill', 'none');
-  retPath.setAttribute('stroke', '#2c6fb0');
-  retPath.setAttribute('stroke-width', '2.5');
+  retPath.setAttribute('stroke', '#2980b9');
+  retPath.setAttribute('stroke-width', '2.8');
   retPath.setAttribute('stroke-linecap', 'round');
   retPath.setAttribute('stroke-linejoin', 'round');
   retPath.setAttribute('stroke-dasharray', '9,7');
-  retPath.setAttribute('opacity', '0.85');
   routesG.appendChild(retPath);
 
-  // ===== 绘制站点标记 =====
+  // ===== 站点标记 =====
   const markersG = document.getElementById('markers');
   const tooltip = document.getElementById('tooltip');
   const mapArea = document.getElementById('mapArea');
@@ -376,24 +382,31 @@
 
   function addMarker(s, isReturn) {
     const [cx, cy] = proj(s.lat, s.lng);
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const g = document.createElementNS(SVG, 'g');
     g.setAttribute('transform', `translate(${cx},${cy})`);
     g.style.cursor = 'pointer';
 
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', '15');
-    circle.setAttribute('fill', isReturn ? '#2c6fb0' : '#5a3e1b');
-    circle.setAttribute('stroke', isReturn ? '#a8c8e8' : '#e8c87a');
+    // 白色外圈 halo
+    const halo = document.createElementNS(SVG, 'circle');
+    halo.setAttribute('r', '17');
+    halo.setAttribute('fill', '#ffffff');
+    halo.setAttribute('stroke', 'none');
+    g.appendChild(halo);
+
+    const circle = document.createElementNS(SVG, 'circle');
+    circle.setAttribute('r', '14');
+    circle.setAttribute('fill', isReturn ? '#2980b9' : '#1a2744');
+    circle.setAttribute('stroke', isReturn ? '#85c1e9' : '#f1c40f');
     circle.setAttribute('stroke-width', '3');
     g.appendChild(circle);
 
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    const text = document.createElementNS(SVG, 'text');
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dominant-baseline', 'central');
     text.setAttribute('font-size', '14');
     text.setAttribute('font-weight', 'bold');
-    text.setAttribute('fill', '#fff');
-    text.setAttribute('font-family', 'Georgia, serif');
+    text.setAttribute('fill', '#ffffff');
+    text.setAttribute('font-family', 'Arial, sans-serif');
     text.textContent = s.num;
     g.appendChild(text);
 
