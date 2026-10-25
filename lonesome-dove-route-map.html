@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>孤鸽镇 · 老警长的旅程路线图</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; font-family: "Georgia", "Songti SC", serif; }
+  #map { height: 100vh; width: 100%; background: #e8e4dc; }
+
+  /* 顶部标题栏 */
+  .title-bar {
+    position: absolute;
+    top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(20, 18, 15, 0.92);
+    color: #f0e6d2;
+    padding: 12px 26px;
+    border-radius: 6px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    text-align: center;
+    border: 1px solid #8a6d3b;
+    max-width: 92%;
+  }
+  .title-bar h1 {
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    color: #e8c87a;
+  }
+  .title-bar p {
+    font-size: 13px;
+    color: #c9b896;
+    line-height: 1.5;
+  }
+
+  /* 图例 */
+  .legend {
+    position: absolute;
+    bottom: 28px; left: 12px;
+    z-index: 1000;
+    background: rgba(255, 252, 245, 0.96);
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.3);
+    font-size: 13px;
+    line-height: 1.9;
+    border: 1px solid #c9b896;
+    max-width: 230px;
+  }
+  .legend h3 {
+    font-size: 14px;
+    color: #5a3e1b;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #d4c4a0;
+    padding-bottom: 4px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-line {
+    width: 28px; height: 4px; border-radius: 2px;
+  }
+  .legend-line.north { background: #c0392b; }
+  .legend-line.return {
+    background: repeating-linear-gradient(90deg, #2c6fb0 0 5px, transparent 5px 10px);
+    height: 3px;
+  }
+  .legend-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #5a3e1b; border: 2px solid #e8c87a;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 9px; font-weight: bold;
+  }
+
+  /* 站点编号标记样式 */
+  .stop-marker {
+    background: #5a3e1b;
+    color: #fff;
+    border: 3px solid #e8c87a;
+    border-radius: 50%;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    font-family: Georgia, serif;
+  }
+  .stop-marker.return {
+    background: #2c6fb0;
+    border-color: #a8c8e8;
+  }
+
+  /* 弹窗样式 */
+  .leaflet-popup-content-wrapper {
+    background: #fffcf5;
+    border: 1px solid #c9b896;
+    border-radius: 6px;
+  }
+  .leaflet-popup-content {
+    margin: 12px 16px;
+    font-family: Georgia, serif;
+    max-width: 260px;
+  }
+  .popup-num {
+    display: inline-block;
+    background: #5a3e1b;
+    color: #e8c87a;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+    margin-right: 6px;
+    font-weight: bold;
+  }
+  .popup-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5a3e1b;
+    margin-bottom: 4px;
+  }
+  .popup-state {
+    font-size: 12px;
+    color: #8a6d3b;
+    margin-bottom: 8px;
+  }
+  .popup-desc {
+    font-size: 13px;
+    color: #3a3228;
+    line-height: 1.55;
+  }
+
+  /* 侧边站点列表 */
+  .sidebar {
+    position: absolute;
+    top: 96px; right: 12px;
+    z-index: 1000;
+    background: rgba(255, 252, 245, 0.96);
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.3);
+    font-size: 12px;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+    width: 240px;
+    border: 1px solid #c9b896;
+  }
+  .sidebar h3 {
+    font-size: 14px;
+    color: #5a3e1b;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #d4c4a0;
+    padding-bottom: 4px;
+    text-align: center;
+  }
+  .stop-list-item {
+    padding: 6px 4px;
+    border-bottom: 1px dashed #e0d4b8;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .stop-list-item:hover { background: #f3ead0; }
+  .stop-list-item:last-child { border-bottom: none; }
+  .stop-list-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    background: #5a3e1b;
+    color: #e8c87a;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  .stop-list-item.return .stop-list-num { background: #2c6fb0; }
+  .stop-list-name { font-weight: bold; color: #5a3e1b; font-size: 12.5px; }
+  .stop-list-brief { font-size: 11px; color: #8a6d3b; line-height: 1.4; }
+
+  .section-divider {
+    text-align: center;
+    color: #8a6d3b;
+    font-size: 11px;
+    margin: 8px 0 4px;
+    font-style: italic;
+  }
+
+  @media (max-width: 700px) {
+    .sidebar { width: 180px; font-size: 11px; }
+    .title-bar h1 { font-size: 16px; }
+    .title-bar p { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="title-bar">
+  <h1>孤鸽镇 · 老警长的旅程</h1>
+  <p>1989 年经典西部迷你剧《Lonesome Dove》— 从德克萨斯到蒙大拿，约 3000 英里的赶牛征途</p>
+</div>
+
+<div class="legend">
+  <h3>图例</h3>
+  <div class="legend-item"><span class="legend-line north"></span><span>北上赶牛路线</span></div>
+  <div class="legend-item"><span class="legend-line return"></span><span>考尔携格斯遗体返乡</span></div>
+  <div class="legend-item"><span class="legend-dot">1</span><span>途经站点</span></div>
+</div>
+
+<div class="sidebar">
+  <h3>北上赶牛路线</h3>
+  <div id="north-list"></div>
+  <div class="section-divider">— 归乡之路 —</div>
+  <div id="return-list"></div>
+</div>
+
+<script>
+  // 站点数据：[编号, 名称, 州/地区, 纬度, 经度, 描述]
+  const stops = [
+    {
+      num: 1,
+      name: "孤鸽镇 Lonesome Dove",
+      state: "德克萨斯州 · 格兰德河畔",
+      lat: 29.32,
+      lng: -100.50,
+      desc: "两位退役德州骑警——格斯·麦克雷与伍德罗·考尔在此经营哈特溪牛公司。老友杰克·斯普恩带来蒙大拿水草丰美的传说，点燃了北上的雄心。"
+    },
+    {
+      num: 2,
+      name: "努埃塞斯河 The Nueces River",
+      state: "德克萨斯州",
+      lat: 29.15,
+      lng: -99.60,
+      desc: "牛群渡过努埃塞斯河时，爱尔兰少年肖恩·奥布赖恩踩入水蝮蛇窝，被群蛇围攻而死，成为征途上的第一个亡魂，也预示了此行的凶险。"
+    },
+    {
+      num: 3,
+      name: "圣安东尼奥 San Antonio",
+      state: "德克萨斯州",
+      lat: 29.4241,
+      lng: -98.4936,
+      desc: "队伍在圣安东尼奥附近招募到身怀绝技的厨子波·坎波；格斯追逐妓女洛雷娜，她的命运从此与这支队伍紧紧相连。"
+    },
+    {
+      num: 4,
+      name: "沃斯堡 Fort Worth",
+      state: "德克萨斯州",
+      lat: 32.7555,
+      lng: -97.3308,
+      desc: "牛群穿过德州腹地抵达沃斯堡，牛仔们在酒馆与红灯区酩酊而归。然而洛雷娜被凶残的叛徒蓝鸭掳走，格斯独自策马追往高原。"
+    },
+    {
+      num: 5,
+      name: "红河 The Red River",
+      state: "德州 / 印第安领地（今俄克拉荷马）交界",
+      lat: 33.95,
+      lng: -97.10,
+      desc: "队伍赶动数千头哞叫的牛群涉过宽阔凶险的红河，离开德克萨斯进入印第安领地，前方是广袤无边的大平原。"
+    },
+    {
+      num: 6,
+      name: "道奇城 Dodge City",
+      state: "堪萨斯州 · 阿肯色河畔",
+      lat: 37.7540,
+      lng: -99.9890,
+      desc: "穿过印第安领地进入堪萨斯，经著名的牛镇道奇城，一路遭遇冰雹、雷电与干旱，渡河无数，日子在驱赶牛群的苦役中融为一体。"
+    },
+    {
+      num: 7,
+      name: "奥加拉拉 Ogallala",
+      state: "内布拉斯加州 · 普拉特河畔",
+      lat: 41.1292,
+      lng: -101.7183,
+      desc: "格斯绕道探访年轻时的挚爱克拉拉·艾伦。克拉拉收留了脆弱的洛雷娜，却拒绝重燃旧情。格斯心中怅然，继续策马北上。"
+    },
+    {
+      num: 8,
+      name: "粉河 Powder River",
+      state: "怀俄明领地 · 荒原",
+      lat: 43.60,
+      lng: -105.80,
+      desc: "在怀俄明的恶地，饥饿的印第安人偷走马匹。忠诚的追踪者迪茨在寻马途中遇害，长眠于荒原。随后格斯在粉河附近被印第安武士射中两箭，腿伤恶化。"
+    },
+    {
+      num: 9,
+      name: "迈尔斯城 Miles City",
+      state: "蒙大拿领地",
+      lat: 46.4080,
+      lng: -105.8408,
+      desc: "格斯跋涉数日才抵达迈尔斯城就医，然而伤口已坏疽，一条腿被截肢。当医生说另一条腿也必须截去时，格斯宁死不做残废，嘱托考尔将他葬于瓜达卢佩河畔的泉水旁，含笑而逝。"
+    },
+    {
+      num: 10,
+      name: "米尔克河 Milk River",
+      state: "蒙大拿领地 · 密苏里河与米尔克河之间",
+      lat: 48.40,
+      lng: -107.90,
+      desc: "考尔将最后一批牛群赶入蒙大拿北部这片从未被开垦的肥沃草原，建起北蒙大拿第一座牧场，梦想终成现实，代价却无比沉重。"
+    }
+  ];
+
+  // 归乡之路：考尔带格斯的遗体返回德克萨斯瓜达卢佩河畔
+  const returnStops = [
+    {
+      num: "R",
+      name: "瓜达卢佩河畔 The Guadalupe River",
+      state: "德克萨斯州 · 格斯的长眠之地",
+      lat: 30.05,
+      lng: -99.14,
+      desc: "次年春天，考尔独自用马车装载格斯的棺木，横穿整个大平原，跋涉约 2000 英里，将老友归葬于瓜达卢佩河畔他魂牵梦萦的泉水旁。"
+    }
+  ];
+
+  // 初始化地图
+  const map = L.map('map', {
+    center: [38, -100],
+    zoom: 5,
+    minZoom: 4,
+    maxZoom: 10,
+    zoomControl: true
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 18
+  }).addTo(map);
+
+  // 北上路线坐标
+  const northRoute = stops.map(s => [s.lat, s.lng]);
+
+  // 北上路线折线
+  L.polyline(northRoute, {
+    color: '#c0392b',
+    weight: 4,
+    opacity: 0.85,
+    dashArray: null
+  }).addTo(map);
+
+  // 归乡路线：从终点（米尔克河）回到瓜达卢佩河
+  const returnRoute = [
+    [stops[stops.length - 1].lat, stops[stops.length - 1].lng],
+    [returnStops[0].lat, returnStops[0].lng]
+  ];
+  L.polyline(returnRoute, {
+    color: '#2c6fb0',
+    weight: 3,
+    opacity: 0.8,
+    dashArray: '8, 8'
+  }).addTo(map);
+
+  // 自定义编号图标
+  function makeIcon(num, isReturn) {
+    return L.divIcon({
+      className: '',
+      html: `<div class="stop-marker ${isReturn ? 'return' : ''}">${num}</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -16]
+    });
+  }
+
+  // 添加北上站点
+  const northListEl = document.getElementById('north-list');
+  const markers = {};
+
+  stops.forEach(s => {
+    const marker = L.marker([s.lat, s.lng], { icon: makeIcon(s.num, false) }).addTo(map);
+    marker.bindPopup(`
+      <div class="popup-title"><span class="popup-num">${s.num}</span>${s.name}</div>
+      <div class="popup-state">${s.state}</div>
+      <div class="popup-desc">${s.desc}</div>
+    `);
+    markers[s.num] = marker;
+
+    // 侧边栏列表项
+    const item = document.createElement('div');
+    item.className = 'stop-list-item';
+    item.innerHTML = `
+      <div class="stop-list-num">${s.num}</div>
+      <div>
+        <div class="stop-list-name">${s.name}</div>
+        <div class="stop-list-brief">${s.state.split(' · ')[0]}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => {
+      map.flyTo([s.lat, s.lng], 8, { duration: 1.2 });
+      marker.openPopup();
+    });
+    northListEl.appendChild(item);
+  });
+
+  // 添加归乡站点
+  const returnListEl = document.getElementById('return-list');
+  returnStops.forEach(s => {
+    const marker = L.marker([s.lat, s.lng], { icon: makeIcon(s.num, true) }).addTo(map);
+    marker.bindPopup(`
+      <div class="popup-title"><span class="popup-num" style="background:#2c6fb0">${s.num}</span>${s.name}</div>
+      <div class="popup-state">${s.state}</div>
+      <div class="popup-desc">${s.desc}</div>
+    `);
+
+    const item = document.createElement('div');
+    item.className = 'stop-list-item return';
+    item.innerHTML = `
+      <div class="stop-list-num">${s.num}</div>
+      <div>
+        <div class="stop-list-name">${s.name}</div>
+        <div class="stop-list-brief">格斯的归葬之地</div>
+      </div>
+    `;
+    item.addEventListener('click', () => {
+      map.flyTo([s.lat, s.lng], 8, { duration: 1.2 });
+      marker.openPopup();
+    });
+    returnListEl.appendChild(item);
+  });
+
+  // 自适应视野
+  const allPoints = [...northRoute, [returnStops[0].lat, returnStops[0].lng]];
+  map.fitBounds(L.latLngBounds(allPoints).pad(0.12));
+</script>
+
+</body>
+</html>
